@@ -4,28 +4,28 @@ import Link from "next/link";
 
 const HeroSection = () => {
   return (
-    <section className="py-20 md:py-28 bg-hero-gradient">
+    <section className="py-12 md:py-28 bg-hero-gradient overflow-hidden">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="space-y-6 text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
               AI-Powered PDF Answer Sheet Evaluation
             </h1>
-            <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto md:mx-0 leading-relaxed">
               Upload an answer key and student answer sheet in PDF format.
               Automatically analyze, compare, and generate marks with AI in seconds.
             </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-                <Link href={"/analyze"}>
-              <Button size="lg" className="text-base px-8 py-6">
-                Start Analyzing
-              </Button>
-                </Link>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
+              <Link href={"/analyze"} className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 h-14 sm:h-12">
+                  Start Analyzing
+                </Button>
+              </Link>
             </div>
           </div>
 
           {/* Mock Dashboard Illustration */}
-          <div className="bg-card border border-border rounded-xl shadow-lg p-6 space-y-4">
+          <div className="bg-card border border-border rounded-xl shadow-lg p-4 sm:p-6 space-y-4 animate-in fade-in slide-in-from-right-4 duration-700">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <span className="font-semibold text-foreground">Evaluation Results</span>
               <span className="text-xs text-muted-foreground bg-secondary px-3 py-1 rounded-full">Live Preview</span>
