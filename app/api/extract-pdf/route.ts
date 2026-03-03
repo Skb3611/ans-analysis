@@ -18,9 +18,12 @@ export async function POST(req: NextRequest) {
         const protocol =
           process.env.NODE_ENV === "production" ? "https" : "http";
         const host = process.env.VERCEL_URL || "localhost:3000";
+        console.log(host);
+        console.log(`${protocol}://${host}/sample-data/${sampleFile}`);
         const response = await fetch(
           `${protocol}://${host}/sample-data/${sampleFile}`,
         );
+        console.log("Sample Data Response:", response);
         const data = await response.json();
 
         // Convert JSON data to readable text format
