@@ -33,7 +33,6 @@ export default function AnalyzePage() {
   };
 
   function normalize(text: string) {
-    console.log(text);
     return text.toLowerCase().replace(/\s+/g, " ").trim();
   }
 
@@ -116,7 +115,6 @@ export default function AnalyzePage() {
         throw new Error(errorData.error || "Failed to analyze");
       }
       const analysis = await response.json();
-      console.log("[v0] Analysis successful:", analysis);
 
       // Store results and navigate
       sessionStorage.setItem("analysisResults", JSON.stringify(analysis));

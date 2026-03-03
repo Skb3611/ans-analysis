@@ -16,11 +16,9 @@ export async function POST(req: NextRequest) {
 
       try {
         const url = process.env.URL || "http://localhost:3000";
-        console.log(`${url}/sample-data/${sampleFile}`);
         const response = await fetch(
           `${url}/sample-data/${sampleFile}`,
         );
-        console.log("Sample Data Response:", response);
         const data = await response.json();
 
         // Convert JSON data to readable text format
@@ -80,7 +78,6 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
 
     const { text } = await extractText(arrayBuffer);
-    console.log("Extracted Text:", text);
 
     if (!text || text.length === 0) {
       return NextResponse.json(

@@ -80,13 +80,10 @@ Return ONLY a valid JSON object (no markdown, no extra text) in this exact forma
   "totalMarks": <total>
 }`;
 
-    console.log(
-      "[v0] Sending request to Gemini API with model gemini-flash-lite-latest",
-    );
+
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
 
-    console.log("[v0] API response received, parsing JSON...");
 
     // Parse JSON from response - look for JSON object
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
