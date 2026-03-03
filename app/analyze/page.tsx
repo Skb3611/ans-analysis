@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, FileText, GraduationCap, Loader2, Settings, Upload } from "lucide-react";
 
 export default function AnalyzePage() {
   const router = useRouter();
@@ -132,138 +132,161 @@ export default function AnalyzePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20 py-8 px-4">
+<main className="min-h-screen bg-gradient-to-b from-background to-secondary/20 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
           Back
         </button>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">
-          Analyze Answer Sheet
-        </h1>
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Analyze Answer Sheet
+          </h1>
+          <p className="text-muted-foreground">
+            Upload your PDFs and let AI evaluate the answers automatically.
+          </p>
+        </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Answer Key Section */}
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Step 1: Upload Answer Key PDF
-            </h2>
-            <Input
-              type="file"
-              accept=".pdf"
-              onChange={handleAnswerKeyUpload}
-              className="mb-4"
-            />
-            <Button
-              variant="outline"
-              onClick={() => loadSampleData("answerKey")}
-              className="mb-4"
-            >
-              Load Sample Answer Key
-            </Button>
-            {answerKeyText && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-                <div className="bg-secondary/50 rounded p-4 max-h-40 overflow-y-auto border border-border">
-                  <p className="text-sm text-foreground whitespace-pre-wrap">
-                    {answerKeyText.slice(0, 500)}
-                  </p>
-                  {answerKeyText.length > 500 && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      ... (truncated)
-                    </p>
-                  )}
-                </div>
+          <Card className="p-0 overflow-hidden border-border/60 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 px-6 py-4 bg-secondary/40 border-b border-border/60">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                <FileText className="w-4 h-4" />
               </div>
-            )}
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Step 1: Upload Answer Key PDF
+                </h2>
+                <p className="text-xs text-muted-foreground">Extract correct answers from PDF</p>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <div className="relative flex-1">
+                  <Input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleAnswerKeyUpload}
+                    className="file:bg-primary/5 file:text-primary file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3 file:font-medium file:text-xs hover:border-primary/40 transition-colors cursor-pointer"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => loadSampleData("answerKey")}
+                  className="shrink-0 gap-2 border-dashed"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Load Sample
+                </Button>
+              </div>
+              {answerKeyText && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Preview</p>
+                  <div className="bg-secondary/30 rounded-lg p-4 max-h-40 overflow-y-auto border border-border/40">
+                    <p className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                      {answerKeyText.slice(0, 500)}
+                    </p>
+                    {answerKeyText.length > 500 && (
+                      <p className="text-xs text-muted-foreground mt-2 italic">
+                        ... (truncated)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
 
           {/* Marking Criteria Section */}
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Step 2: Enter Marking Criteria
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Max Marks Per Question
-                </label>
-                <Input
-                  type="number"
-                  value={maxMarks}
-                  onChange={(e) => setMaxMarks(e.target.value)}
-                />
+          <Card className="p-0 overflow-hidden border-border/60 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 px-6 py-4 bg-secondary/40 border-b border-border/60">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                <Settings className="w-4 h-4" />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Marks When Correct
-                </label>
-                <Input
-                  type="number"
-                  value={correctMarks}
-                  onChange={(e) => setCorrectMarks(e.target.value)}
-                />
+                <h2 className="text-lg font-semibold text-foreground">
+                  Step 2: Enter Marking Criteria
+                </h2>
+                <p className="text-xs text-muted-foreground">Define how answers are scored</p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Marks When Partial
-                </label>
-                <Input
-                  type="number"
-                  value={partialMarks}
-                  onChange={(e) => setPartialMarks(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Marks When Wrong
-                </label>
-                <Input
-                  type="number"
-                  value={wrongMarks}
-                  onChange={(e) => setWrongMarks(e.target.value)}
-                />
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { label: "Max Marks", value: maxMarks, setter: setMaxMarks, color: "text-foreground" },
+                  { label: "Correct", value: correctMarks, setter: setCorrectMarks, color: "text-emerald-600" },
+                  { label: "Partial", value: partialMarks, setter: setPartialMarks, color: "text-amber-600" },
+                  { label: "Wrong", value: wrongMarks, setter: setWrongMarks, color: "text-destructive" },
+                ].map((field) => (
+                  <div key={field.label} className="space-y-2">
+                    <label className={`text-sm font-medium ${field.color} block`}>
+                      {field.label}
+                    </label>
+                    <Input
+                      type="number"
+                      value={field.value}
+                      onChange={(e) => field.setter(e.target.value)}
+                      className="text-center font-semibold text-lg h-12"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </Card>
 
           {/* Student PDF Section */}
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Step 3: Upload Student PDF
-            </h2>
-            <Input
-              type="file"
-              accept=".pdf"
-              onChange={handleStudentUpload}
-              className="mb-4"
-            />
-            <Button
-              variant="outline"
-              onClick={() => loadSampleData("student")}
-              className="mb-4"
-            >
-              Load Sample Student Answers
-            </Button>
-            {studentText && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-                <div className="bg-secondary/50 rounded p-4 max-h-40 overflow-y-auto border border-border">
-                  <p className="text-sm text-foreground whitespace-pre-wrap">
-                    {studentText.slice(0, 500)}
-                  </p>
-                  {studentText.length > 500 && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      ... (truncated)
-                    </p>
-                  )}
-                </div>
+          <Card className="p-0 overflow-hidden border-border/60 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 px-6 py-4 bg-secondary/40 border-b border-border/60">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                <GraduationCap className="w-4 h-4" />
               </div>
-            )}
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Step 3: Upload Student PDF
+                </h2>
+                <p className="text-xs text-muted-foreground">Extract student responses automatically</p>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <div className="relative flex-1">
+                  <Input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleStudentUpload}
+                    className="file:bg-primary/5 file:text-primary file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3 file:font-medium file:text-xs hover:border-primary/40 transition-colors cursor-pointer"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => loadSampleData("student")}
+                  className="shrink-0 gap-2 border-dashed"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Load Sample
+                </Button>
+              </div>
+              {studentText && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Preview</p>
+                  <div className="bg-secondary/30 rounded-lg p-4 max-h-40 overflow-y-auto border border-border/40">
+                    <p className="text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                      {studentText.slice(0, 500)}
+                    </p>
+                    {studentText.length > 500 && (
+                      <p className="text-xs text-muted-foreground mt-2 italic">
+                        ... (truncated)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
 
           {/* Analyze Button */}
@@ -271,12 +294,12 @@ export default function AnalyzePage() {
             onClick={handleAnalyze}
             disabled={loading || !answerKeyText || !studentText}
             size="lg"
-            className="w-full"
+            className="w-full h-14 text-base font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Analyzing...
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Analyzing with AI...
               </>
             ) : (
               "Analyze Answer Sheet"

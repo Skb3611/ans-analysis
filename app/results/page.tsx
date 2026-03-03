@@ -1,10 +1,11 @@
-'use client';
-
+"use client"
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, CheckCircle2, AlertCircle, XCircle, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Home, CheckCircle2, AlertCircle, XCircle, TrendingUp, Award, BarChart3, MessageSquareText } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useRouter } from 'next/navigation';
+import { navigate } from 'next/dist/client/components/segment-cache/navigation';
 
 interface Question {
   question: string;
@@ -21,8 +22,8 @@ interface Analysis {
   totalMarks: number;
 }
 
-export default function ResultsPage() {
-  const router = useRouter();
+const ResultsPage = () => {
+ const router = useRouter();
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
 
   useEffect(() => {
@@ -34,10 +35,17 @@ export default function ResultsPage() {
 
   if (!analysis) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center px-4">
-        <Card className="p-8 text-center">
-          <p className="text-foreground mb-4">No analysis results found.</p>
-          <Button onClick={() => router.push('/analyze')}>
+      <main className="min-h-screen bg-linear-to-b from-background to-secondary/20 flex items-center justify-center px-4">
+        <Card className="p-8 text-center max-w-md w-full border-border/60 shadow-md">
+          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-muted mx-auto mb-4">
+            <AlertCircle className="w-7 h-7 text-muted-foreground" />
+          </div>
+          <p className="text-lg font-semibold text-foreground mb-2">No Results Found</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            It looks like you haven't analyzed any answer sheets yet.
+          </p>
+          <Button onClick={() => router.push('/analyze')} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
             Go Back to Analysis
           </Button>
         </Card>
@@ -45,37 +53,37 @@ export default function ResultsPage() {
     );
   }
 
-  const totalMaxMarks = analysis.questions.reduce((sum, q) => sum + q.maxMarks, 0);
+  const totalMaxMarks = analysis.questions.reduce((sum: number, q: Question) => sum + q.maxMarks, 0);
   const percentageNum = totalMaxMarks > 0 ? (analysis.totalMarks / totalMaxMarks) * 100 : 0;
   const percentage = percentageNum.toFixed(1);
 
-  const correctCount = analysis.questions.filter(q => q.result.toLowerCase() === 'correct').length;
-  const partialCount = analysis.questions.filter(q => q.result.toLowerCase() === 'partial').length;
-  const wrongCount = analysis.questions.filter(q => q.result.toLowerCase() === 'wrong').length;
+  const correctCount = analysis.questions.filter((q: Question) => q.result.toLowerCase() === 'correct').length;
+  const partialCount = analysis.questions.filter((q: Question) => q.result.toLowerCase() === 'partial').length;
+  const wrongCount = analysis.questions.filter((q: Question) => q.result.toLowerCase() === 'wrong').length;
 
   const getResultIcon = (result: string) => {
     switch (result.toLowerCase()) {
       case 'correct':
-        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
+        return <CheckCircle2 className="w-5 h-5 text-emerald-600" />;
       case 'partial':
-        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+        return <AlertCircle className="w-5 h-5 text-amber-600" />;
       case 'wrong':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-5 h-5 text-destructive" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />;
+        return <AlertCircle className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
-  const getResultColor = (result: string) => {
+  const getResultBadgeClasses = (result: string) => {
     switch (result.toLowerCase()) {
       case 'correct':
-        return 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'partial':
-        return 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'wrong':
-        return 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800';
+        return 'bg-red-50 text-destructive border-red-200';
       default:
-        return 'bg-gray-50 border-gray-200 dark:bg-gray-950 dark:border-gray-800';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -88,150 +96,183 @@ export default function ResultsPage() {
   };
 
   const getPerformanceColor = (percentage: number) => {
-    if (percentage >= 90) return 'text-green-600';
-    if (percentage >= 80) return 'text-blue-600';
-    if (percentage >= 70) return 'text-yellow-600';
-    return 'text-red-600';
+    if (percentage >= 90) return 'text-emerald-600';
+    if (percentage >= 80) return 'text-primary';
+    if (percentage >= 70) return 'text-amber-600';
+    return 'text-destructive';
+  };
+
+  const getProgressColor = (percentage: number) => {
+    if (percentage >= 80) return '[&>div]:bg-emerald-500';
+    if (percentage >= 60) return '[&>div]:bg-amber-500';
+    return '[&>div]:bg-destructive';
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-secondary/20 py-8 px-4">
+    <main className="min-h-screen bg-linear-to-b from-background to-secondary/20 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        {/* Navigation */}
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => router.push('/analyze')}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             Back
           </button>
           <Button
-            variant="outline"
+            variant="ghost"
+            size="sm"
             onClick={() => router.push('/')}
-            className="flex items-center gap-2"
+            className="gap-2 text-muted-foreground"
           >
             <Home className="w-4 h-4" />
             Home
           </Button>
         </div>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Analysis Results</h1>
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Analysis Results</h1>
+          <p className="text-muted-foreground">AI-generated evaluation of student responses.</p>
+        </div>
 
         {/* Score Summary */}
-        <Card className="p-8 mb-6 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 border border-primary/20">
-          <div className="space-y-6">
-            <div className="text-center">
-              <p className={`text-lg font-semibold mb-2 ${getPerformanceColor(parseFloat(percentage))}`}>
-                {getPerformanceMessage(parseFloat(percentage))}
-              </p>
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-5xl font-bold text-foreground">{percentage}</span>
-                <span className="text-2xl text-muted-foreground">%</span>
-              </div>
-              <p className="text-muted-foreground mt-2">
-                {analysis.totalMarks} out of {totalMaxMarks} marks
-              </p>
+        <Card className="p-0 overflow-hidden border-border/60 shadow-sm mb-8">
+          <div className="flex items-center gap-3 px-6 py-4 bg-secondary/40 border-b border-border/60">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+              <Award className="w-4 h-4" />
             </div>
+            <h2 className="text-lg font-semibold text-foreground">Score Summary</h2>
+          </div>
+          <div className="p-6">
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+              {/* Score Circle */}
+              <div className="flex flex-col items-center gap-3 min-w-[180px]">
+                <div className="relative flex items-center justify-center w-32 h-32 rounded-full border-4 border-secondary bg-background shadow-inner">
+                  <div className="text-center">
+                    <span className={`text-4xl font-bold ${getPerformanceColor(parseFloat(percentage))}`}>
+                      {percentage}
+                    </span>
+                    <span className="text-lg text-muted-foreground">%</span>
+                  </div>
+                </div>
+                <p className={`text-sm font-semibold ${getPerformanceColor(parseFloat(percentage))}`}>
+                  {getPerformanceMessage(parseFloat(percentage))}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {analysis.totalMarks} out of {totalMaxMarks} marks
+                </p>
+                <Progress
+                  value={parseFloat(percentage)}
+                  className={`h-2 w-40 ${getProgressColor(parseFloat(percentage))}`}
+                />
+              </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-                <p className="text-sm text-muted-foreground mb-1">Correct</p>
-                <p className="text-2xl font-bold text-green-600">{correctCount}</p>
-              </div>
-              <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm text-muted-foreground mb-1">Partial</p>
-                <p className="text-2xl font-bold text-yellow-600">{partialCount}</p>
-              </div>
-              <div className="text-center p-4 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-800">
-                <p className="text-sm text-muted-foreground mb-1">Wrong</p>
-                <p className="text-2xl font-bold text-red-600">{wrongCount}</p>
+              {/* Stats Breakdown */}
+              <div className="flex-1 grid grid-cols-3 gap-4 w-full">
+                <Card className="p-4 text-center border-emerald-200 bg-emerald-50/50">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Correct</p>
+                  <p className="text-2xl font-bold text-emerald-600 mt-1">{correctCount}</p>
+                </Card>
+                <Card className="p-4 text-center border-amber-200 bg-amber-50/50">
+                  <AlertCircle className="w-5 h-5 text-amber-600 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Partial</p>
+                  <p className="text-2xl font-bold text-amber-600 mt-1">{partialCount}</p>
+                </Card>
+                <Card className="p-4 text-center border-red-200 bg-red-50/50">
+                  <XCircle className="w-5 h-5 text-destructive mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Wrong</p>
+                  <p className="text-2xl font-bold text-destructive mt-1">{wrongCount}</p>
+                </Card>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Questions List */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Question Breakdown</h2>
-          {analysis.questions.map((q, index) => (
-            <Card key={index} className={`p-6 border-l-4 ${getResultColor(q.result)}`} style={{
-              borderLeftColor: q.result.toLowerCase() === 'correct' ? '#16a34a' : 
-                              q.result.toLowerCase() === 'partial' ? '#eab308' : '#dc2626'
-            }}>
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start justify-between gap-4">
+        {/* Questions Breakdown */}
+        <Card className="p-0 overflow-hidden border-border/60 shadow-sm mb-8">
+          <div className="flex items-center gap-3 px-6 py-4 bg-secondary/40 border-b border-border/60">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+              <BarChart3 className="w-4 h-4" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">Question Breakdown</h2>
+          </div>
+          <div className="divide-y divide-border/60">
+            {analysis.questions.map((q: Question, index: number) => (
+              <div key={index} className="p-6">
+                {/* Question Header */}
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     {getResultIcon(q.result)}
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <span className="font-semibold text-foreground">
                       Question {index + 1}
-                    </h3>
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-foreground">
-                        {q.marks}/{q.maxMarks}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      q.result.toLowerCase() === 'correct' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' :
-                      q.result.toLowerCase() === 'partial' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200' :
-                      'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
-                    }`}>
+                    <span className="text-sm font-bold text-foreground bg-secondary/60 px-3 py-1 rounded-full">
+                      {q.marks}/{q.maxMarks}
+                    </span>
+                    <span className={`text-xs font-semibold px-3 py-1 rounded-full border capitalize ${getResultBadgeClasses(q.result)}`}>
                       {q.result}
                     </span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                {/* Question Content */}
+                <div className="space-y-3 pl-8">
                   <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1 uppercase tracking-wider">Question</p>
-                    <p className="text-foreground">{q.question}</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Question</p>
+                    <p className="text-sm text-foreground">{q.question}</p>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-background/50 rounded-lg p-4 border border-border">
-                      <p className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Student's Answer</p>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{q.studentAnswer || 'No answer provided'}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-secondary/30 rounded-lg p-3 border border-border/40">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Student's Answer</p>
+                      <p className="text-sm text-foreground">{q.studentAnswer || 'No answer provided'}</p>
                     </div>
-                    <div className="bg-green-500/5 rounded-lg p-4 border border-green-500/20">
-                      <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-2 uppercase tracking-wider">Correct Answer</p>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{q.correctAnswer}</p>
+                    <div className="bg-secondary/30 rounded-lg p-3 border border-border/40">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Correct Answer</p>
+                      <p className="text-sm text-foreground">{q.correctAnswer}</p>
                     </div>
                   </div>
 
                   {q.feedback && (
-                    <div className="bg-secondary/50 rounded-lg p-4 border border-border">
-                      <p className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Feedback</p>
-                      <p className="text-sm text-foreground italic">
-                        "{q.feedback}"
-                      </p>
+                    <div className="flex items-start gap-2 bg-primary/5 rounded-lg p-3 border border-primary/10">
+                      <MessageSquareText className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs font-medium text-primary uppercase tracking-wider mb-1">Feedback</p>
+                        <p className="text-sm text-foreground italic">"{q.feedback}"</p>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={() => router.push('/analyze')}
             variant="outline"
-            className="flex-1 h-11"
+            className="flex-1 h-12 gap-2"
           >
-            <TrendingUp className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             Analyze Another
           </Button>
           <Button
             onClick={() => router.push('/')}
-            className="flex-1 h-11"
+            className="flex-1 h-12 gap-2"
           >
-            <Home className="w-4 h-4 mr-2" />
+            <Home className="w-4 h-4" />
             Back to Home
           </Button>
         </div>
       </div>
     </main>
   );
-}
+};
+
+export default ResultsPage;
