@@ -15,13 +15,10 @@ export async function POST(req: NextRequest) {
         sampleType === "student" ? "student-answers.json" : "answer-key.json";
 
       try {
-        const protocol =
-          process.env.NODE_ENV === "production" ? "https" : "http";
-        const host = process.env.VERCEL_URL || "localhost:3000";
-        console.log(host);
-        console.log(`${protocol}://${host}/sample-data/${sampleFile}`);
+        const url = process.env.URL || "http://localhost:3000";
+        console.log(`${url}/sample-data/${sampleFile}`);
         const response = await fetch(
-          `${protocol}://${host}/sample-data/${sampleFile}`,
+          `${url}/sample-data/${sampleFile}`,
         );
         console.log("Sample Data Response:", response);
         const data = await response.json();
