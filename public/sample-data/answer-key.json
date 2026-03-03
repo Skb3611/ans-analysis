@@ -1,0 +1,30 @@
+{
+  "title": "Biology Midterm - Answer Key",
+  "questions": [
+    {
+      "number": 1,
+      "text": "What is photosynthesis?",
+      "answer": "Photosynthesis is the process by which plants convert light energy into chemical energy stored in glucose. It occurs in the chloroplasts and involves the absorption of carbon dioxide and water, producing oxygen as a byproduct."
+    },
+    {
+      "number": 2,
+      "text": "Describe the structure of a mitochondrion.",
+      "answer": "A mitochondrion has a double membrane structure with the outer membrane forming the boundary and the inner membrane containing cristae (folds). The matrix is the innermost compartment containing enzymes for cellular respiration."
+    },
+    {
+      "number": 3,
+      "text": "What is the function of DNA?",
+      "answer": "DNA stores genetic information and controls the production of proteins. It acts as the hereditary material that passes genetic instructions from parent cells to daughter cells during division."
+    },
+    {
+      "number": 4,
+      "text": "Explain the process of protein synthesis.",
+      "answer": "Protein synthesis involves transcription (DNA to mRNA) and translation (mRNA to protein). mRNA is transcribed from DNA in the nucleus and travels to the ribosome where tRNA brings amino acids to build the protein chain."
+    },
+    {
+      "number": 5,
+      "text": "What are the main types of tissues in animals?",
+      "answer": "The four main types are epithelial tissue (covering and lining), connective tissue (support and structure), muscle tissue (movement), and nervous tissue (signals and coordination)."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "title": "Biology Midterm - Student Submission",
+  "studentName": "Alex Johnson",
+  "studentID": "SJ-2024-001",
+  "questions": [
+    {
+      "number": 1,
+      "text": "What is photosynthesis?",
+      "answer": "Photosynthesis is when plants make food from sunlight. The plant uses light and water to make glucose which gives it energy to grow."
+    },
+    {
+      "number": 2,
+      "text": "Describe the structure of a mitochondrion.",
+      "answer": "A mitochondrion has two membranes - an outer one and an inner one. It has a space inside called the matrix. The inner membrane has folds for energy production."
+    },
+    {
+      "number": 3,
+      "text": "What is the function of DNA?",
+      "answer": "DNA carries genes that tell cells what to do. It passes information from parents to children and controls how our bodies work."
+    },
+    {
+      "number": 4,
+      "text": "Explain the process of protein synthesis.",
+      "answer": "First, DNA makes mRNA which goes to the ribosome. Then tRNA brings amino acids and they connect together to make proteins. This happens in the ribosome."
+    },
+    {
+      "number": 5,
+      "text": "What are the main types of tissues in animals?",
+      "answer": "There are muscles, skin, organs, and nerves. Each type has different jobs in the body."
+    }
+  ]
+}
