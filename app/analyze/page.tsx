@@ -1,99 +1,108 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 export default function AnalyzePage() {
   const router = useRouter();
-  const [answerKeyText, setAnswerKeyText] = useState('');
-  const [studentText, setStudentText] = useState('');
-  const [maxMarks, setMaxMarks] = useState('5');
-  const [correctMarks, setCorrectMarks] = useState('5');
-  const [partialMarks, setPartialMarks] = useState('2');
-  const [wrongMarks, setWrongMarks] = useState('0');
+  const [answerKeyText, setAnswerKeyText] = useState("");
+  const [studentText, setStudentText] = useState("");
+  const [maxMarks, setMaxMarks] = useState("5");
+  const [correctMarks, setCorrectMarks] = useState("5");
+  const [partialMarks, setPartialMarks] = useState("2");
+  const [wrongMarks, setWrongMarks] = useState("0");
   const [loading, setLoading] = useState(false);
 
   const extractPdf = async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await fetch('/api/extract-pdf', {
-      method: 'POST',
+    const response = await fetch("/api/extract-pdf", {
+      method: "POST",
       body: formData,
     });
 
-    if (!response.ok) throw new Error('Failed to extract PDF');
+    if (!response.ok) throw new Error("Failed to extract PDF");
     const data = await response.json();
     return data.text;
   };
 
-  const loadSampleData = async (type: 'answerKey' | 'student') => {
+  function normalize(text: string) {
+    console.log(text);
+    return text.toLowerCase().replace(/\s+/g, " ").trim();
+  }
+
+  const loadSampleData = async (type: "answerKey" | "student") => {
     try {
       const formData = new FormData();
-      formData.append('useSampleData', 'true');
-      formData.append('sampleType', type === 'student' ? 'student' : 'key');
+      formData.append("useSampleData", "true");
+      formData.append("sampleType", type === "student" ? "student" : "key");
 
-      const response = await fetch('/api/extract-pdf', {
-        method: 'POST',
+      const response = await fetch("/api/extract-pdf", {
+        method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to load sample data');
+      if (!response.ok) throw new Error("Failed to load sample data");
       const data = await response.json();
-      
-      if (type === 'answerKey') {
+
+      if (type === "answerKey") {
         setAnswerKeyText(data.text);
       } else {
         setStudentText(data.text);
       }
     } catch (error) {
-      alert('Failed to load sample data');
+      alert("Failed to load sample data");
     }
   };
 
-  const handleAnswerKeyUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAnswerKeyUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       const text = await extractPdf(file);
-      setAnswerKeyText(text);
+      setAnswerKeyText(text[0]);
     } catch (error) {
-      alert('Failed to extract answer key PDF');
+      alert("Failed to extract answer key PDF");
     }
   };
 
-  const handleStudentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStudentUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       const text = await extractPdf(file);
-      setStudentText(text);
+      setStudentText(text[0]);
     } catch (error) {
-      alert('Failed to extract student PDF');
+      alert("Failed to extract student PDF");
     }
   };
 
   const handleAnalyze = async () => {
     if (!answerKeyText || !studentText) {
-      alert('Please upload both answer key and student PDF');
+      alert("Please upload both answer key and student PDF");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          correctText: answerKeyText,
-          studentText: studentText,
+          correctText: normalize(answerKeyText),
+          studentText: normalize(studentText),
           maxMarks: parseInt(maxMarks),
           correctMarks: parseInt(correctMarks),
           partialMarks: parseInt(partialMarks),
@@ -103,18 +112,19 @@ export default function AnalyzePage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('[v0] Analysis API error:', errorData);
-        throw new Error(errorData.error || 'Failed to analyze');
+        console.error("[v0] Analysis API error:", errorData);
+        throw new Error(errorData.error || "Failed to analyze");
       }
       const analysis = await response.json();
-      console.log('[v0] Analysis successful:', analysis);
+      console.log("[v0] Analysis successful:", analysis);
 
       // Store results and navigate
-      sessionStorage.setItem('analysisResults', JSON.stringify(analysis));
-      router.push('/results');
+      sessionStorage.setItem("analysisResults", JSON.stringify(analysis));
+      router.push("/results");
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to analyze answers';
-      console.error('[v0] Error during analysis:', error);
+      const errorMsg =
+        error instanceof Error ? error.message : "Failed to analyze answers";
+      console.error("[v0] Error during analysis:", error);
       alert(errorMsg);
     } finally {
       setLoading(false);
@@ -132,12 +142,16 @@ export default function AnalyzePage() {
           Back
         </button>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Analyze Answer Sheet</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">
+          Analyze Answer Sheet
+        </h1>
 
         <div className="space-y-6">
           {/* Answer Key Section */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Step 1: Upload Answer Key PDF</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Step 1: Upload Answer Key PDF
+            </h2>
             <Input
               type="file"
               accept=".pdf"
@@ -146,7 +160,7 @@ export default function AnalyzePage() {
             />
             <Button
               variant="outline"
-              onClick={() => loadSampleData('answerKey')}
+              onClick={() => loadSampleData("answerKey")}
               className="mb-4"
             >
               Load Sample Answer Key
@@ -155,8 +169,14 @@ export default function AnalyzePage() {
               <div>
                 <p className="text-sm text-muted-foreground mb-2">Preview:</p>
                 <div className="bg-secondary/50 rounded p-4 max-h-40 overflow-y-auto border border-border">
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{answerKeyText.slice(0, 500)}</p>
-                  {answerKeyText.length > 500 && <p className="text-xs text-muted-foreground mt-2">... (truncated)</p>}
+                  <p className="text-sm text-foreground whitespace-pre-wrap">
+                    {answerKeyText.slice(0, 500)}
+                  </p>
+                  {answerKeyText.length > 500 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      ... (truncated)
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -164,10 +184,14 @@ export default function AnalyzePage() {
 
           {/* Marking Criteria Section */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Step 2: Enter Marking Criteria</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Step 2: Enter Marking Criteria
+            </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">Max Marks Per Question</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Max Marks Per Question
+                </label>
                 <Input
                   type="number"
                   value={maxMarks}
@@ -175,7 +199,9 @@ export default function AnalyzePage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">Marks When Correct</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Marks When Correct
+                </label>
                 <Input
                   type="number"
                   value={correctMarks}
@@ -183,7 +209,9 @@ export default function AnalyzePage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">Marks When Partial</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Marks When Partial
+                </label>
                 <Input
                   type="number"
                   value={partialMarks}
@@ -191,7 +219,9 @@ export default function AnalyzePage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">Marks When Wrong</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Marks When Wrong
+                </label>
                 <Input
                   type="number"
                   value={wrongMarks}
@@ -203,7 +233,9 @@ export default function AnalyzePage() {
 
           {/* Student PDF Section */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Step 3: Upload Student PDF</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Step 3: Upload Student PDF
+            </h2>
             <Input
               type="file"
               accept=".pdf"
@@ -212,7 +244,7 @@ export default function AnalyzePage() {
             />
             <Button
               variant="outline"
-              onClick={() => loadSampleData('student')}
+              onClick={() => loadSampleData("student")}
               className="mb-4"
             >
               Load Sample Student Answers
@@ -221,8 +253,14 @@ export default function AnalyzePage() {
               <div>
                 <p className="text-sm text-muted-foreground mb-2">Preview:</p>
                 <div className="bg-secondary/50 rounded p-4 max-h-40 overflow-y-auto border border-border">
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{studentText.slice(0, 500)}</p>
-                  {studentText.length > 500 && <p className="text-xs text-muted-foreground mt-2">... (truncated)</p>}
+                  <p className="text-sm text-foreground whitespace-pre-wrap">
+                    {studentText.slice(0, 500)}
+                  </p>
+                  {studentText.length > 500 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      ... (truncated)
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -241,7 +279,7 @@ export default function AnalyzePage() {
                 Analyzing...
               </>
             ) : (
-              'Analyze Answer Sheet'
+              "Analyze Answer Sheet"
             )}
           </Button>
         </div>
